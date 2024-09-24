@@ -30,17 +30,17 @@ class _OngoingScreenState extends State<OngoingScreen> {
               _buildHeader(),
               const SizedBox(height: 70), // Space for Divider and List
               _buildRescueTeamList(),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ShakeLocationPage(),
-                    ),
-                  );
-                },
-                child: const Text('Join Rescue Team'),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => ShakeLocationPage(),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text('Join Rescue Team'),
+              // ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -67,6 +67,19 @@ class _OngoingScreenState extends State<OngoingScreen> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ShakeLocationPage(),
+            ),
+          );
+        },
+        child: Icon(Icons.crisis_alert_sharp),
+        backgroundColor: Colors.red,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
