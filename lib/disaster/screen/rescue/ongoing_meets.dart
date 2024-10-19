@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:drm_admin/disaster/screen/google_map/google_map.dart';
 import 'package:drm_admin/disaster/screen/google_map/track.dart';
+import 'package:drm_admin/disaster/screen/google_map/victim_location.dart';
 import 'package:drm_admin/disaster/screen/rescue/vedioconf.dart';
 import 'package:drm_admin/disaster/screen/sos_screen/alert_sos.dart';
 import 'package:flutter/material.dart';
@@ -72,12 +73,12 @@ class _OngoingScreenState extends State<OngoingScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ShakeLocationPage(),
+              builder: (context) => victimlocation(),
             ),
           );
         },
-        child: Icon(Icons.crisis_alert_sharp),
-        backgroundColor: Colors.red,
+        child: Icon(Icons.people),
+        backgroundColor: Colors.blue,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
