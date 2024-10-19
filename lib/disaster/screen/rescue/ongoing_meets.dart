@@ -73,7 +73,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => victimlocation(),
+              builder: (context) => VictimLocation(),
             ),
           );
         },
