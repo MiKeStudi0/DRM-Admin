@@ -3,6 +3,7 @@ import 'package:dio_cache_interceptor_file_store/dio_cache_interceptor_file_stor
 import 'package:drm_admin/disaster/screen/bar%20charts/Charts.dart';
 import 'package:drm_admin/disaster/screen/bar%20charts/barchart.dart';
 import 'package:drm_admin/disaster/screen/login&signup/signup.dart';
+import 'package:drm_admin/disaster/screen/notification/fcm.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_list.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_reg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1129,24 +1130,32 @@ class _SettingsPageState extends State<SettingsPage> {
           SettingCard(
             icon: const Icon(IconsaxPlusLinear.document),
             text: 'license'.tr,
-            onPressed: () => Get.to(
-              () => LicensePage(
-                applicationIcon: Container(
-                  width: 100,
-                  height: 100,
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    image: DecorationImage(
-                      image: AssetImage('assets/icons/logoadmin.png'),
-                    ),
-                  ),
+            // onPressed: () => Get.to(
+            //   () => LicensePage(
+            //     applicationIcon: Container(
+            //       width: 100,
+            //       height: 100,
+            //       margin: const EdgeInsets.symmetric(vertical: 5),
+            //       decoration: const BoxDecoration(
+            //         borderRadius: BorderRadius.all(Radius.circular(20)),
+            //         image: DecorationImage(
+            //           image: AssetImage('assets/icons/logoadmin.png'),
+            //         ),
+            //       ),
+            //     ),
+            //     applicationName: 'DRM-Admin',
+            //     applicationVersion: appVersion,
+            //   ),
+            //   transition: Transition.downToUp,
+            // ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AlertInputPage(),
                 ),
-                applicationName: 'DRM-Admin',
-                applicationVersion: appVersion,
-              ),
-              transition: Transition.downToUp,
-            ),
+              );
+            },
           ),
           SettingCard(
             icon: const Icon(IconsaxPlusLinear.archive_book),

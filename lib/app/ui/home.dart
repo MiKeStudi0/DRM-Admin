@@ -1,5 +1,6 @@
 import 'package:drm_admin/disaster/screen/google_map/location_alert.dart';
 import 'package:drm_admin/disaster/screen/rescue/ongoing_meets.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -45,12 +46,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     getData();
     setupTabController();
     locationAlertFunction();
+    requestPermission();
   }
 
   @override
   void dispose() {
     tabController.dispose();
     super.dispose();
+  }
+
+  void requestPermission() async {
+    NotificationSettings settings =
+        await FirebaseMessaging.instance.requestPermission();
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
   }
 
   void setupTabController() {

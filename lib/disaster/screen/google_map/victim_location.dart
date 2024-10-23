@@ -17,7 +17,8 @@ class _VictimLocationState extends State<VictimLocation> {
   TextEditingController _searchController = TextEditingController();
   LatLng _searchedLocation = LatLng(0, 0);
   List<dynamic> _suggestions = [];
-  int _markerCount = 0; // Variable to hold the count of markers
+  int _markerCount = 0;
+  String _victimCountLabel = "Total Victims";
 
   // Your Google Maps API key here (replace with actual key)
   static const String apiKey = 'AIzaSyBJMhMpJEZEN2fubae-mdIZ-vCEXOAkHMk';
@@ -28,7 +29,6 @@ class _VictimLocationState extends State<VictimLocation> {
     _fetchLocationsFromFirebase();
   }
 
-  // Fetches location data from Firestore collection "locations"
   void _fetchLocationsFromFirebase() async {
     FirebaseFirestore.instance
         .collection('Alert_locations')
@@ -36,8 +36,14 @@ class _VictimLocationState extends State<VictimLocation> {
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var data = doc.data() as Map<String, dynamic>;
+        _markerCount += 1;
+
         LatLng position = LatLng(data['latitude'], data['longitude']);
         _addMarker(position, doc.id);
+      });
+
+      setState(() {
+        _victimCountLabel = "Total Victims";
       });
     });
   }
@@ -91,7 +97,7 @@ class _VictimLocationState extends State<VictimLocation> {
       LatLng position = LatLng(location['lat'], location['lng']);
 
       _moveCamera(position);
-      _countMarkersInRadius(position, 1000);
+      _countMarkersInRadius(position, 2000);
       setState(() {
         _suggestions = [];
         _searchController.clear();
@@ -118,7 +124,7 @@ class _VictimLocationState extends State<VictimLocation> {
 
         _moveCamera(position);
         _countMarkersInRadius(
-            position, 1000); // Count markers within 5000 meters
+            position, 2000); // Count markers within 1000 meters
       } else {
         print('No location found');
       }
@@ -144,7 +150,8 @@ class _VictimLocationState extends State<VictimLocation> {
       }
     }
     setState(() {
-      _markerCount = count; // Update the count of markers
+      _markerCount = count;
+      _victimCountLabel = "Victims in Searched Area";
     });
   }
 
@@ -173,7 +180,6 @@ class _VictimLocationState extends State<VictimLocation> {
     return degrees * (pi / 180);
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,9 +293,12 @@ class _VictimLocationState extends State<VictimLocation> {
               ),
               child: Row(
                 children: [
-                  Text("Victim Count"),
+                  Icon(Icons.people, size: 24),
                   SizedBox(width: 8),
-                  Icon(Icons.people, size: 24), // People icon
+                  Text(
+                    _victimCountLabel + ':',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(width: 8),
                   Text(
                     '$_markerCount',
