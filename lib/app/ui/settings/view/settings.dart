@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:dio_cache_interceptor_file_store/dio_cache_interceptor_file_store.dart';
 import 'package:drm_admin/disaster/screen/bar%20charts/Charts.dart';
 import 'package:drm_admin/disaster/screen/bar%20charts/barchart.dart';
+import 'package:drm_admin/disaster/screen/google_map/usertrack.dart';
+import 'package:drm_admin/disaster/screen/google_map/victim_track.dart';
 import 'package:drm_admin/disaster/screen/login&signup/signup.dart';
 import 'package:drm_admin/disaster/screen/notification/fcm.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_list.dart';
@@ -1208,6 +1210,69 @@ class _SettingsPageState extends State<SettingsPage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               VolunteerList()));
+                                },
+                              ),
+                              const Gap(10),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          SettingCard(
+            icon: const Icon(IconsaxPlusLinear.archive_book),
+            text: 'Victim Tracking'.tr,
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom),
+                    child: StatefulBuilder(
+                      builder: (BuildContext context, setState) {
+                        return SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 15),
+                                child: Text(
+                                  'Live Tracking'.tr,
+                                  style: context.textTheme.titleLarge?.copyWith(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                              SettingCard(
+                                elevation: 4,
+                                icon: const Icon(Icons.people),
+                                text: 'Victim List',
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              UserTrackingDataPage()));
+                                },
+                              ),
+                              SettingCard(
+                                elevation: 4,
+                                icon: const Icon(
+                                    LineAwesomeIcons.people_carry_solid),
+                                text: 'Live Locations',
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VictimTrackingLivePage()));
                                 },
                               ),
                               const Gap(10),
