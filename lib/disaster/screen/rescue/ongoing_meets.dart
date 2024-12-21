@@ -31,17 +31,17 @@ class _OngoingScreenState extends State<OngoingScreen> {
               _buildHeader(),
               const SizedBox(height: 70), // Space for Divider and List
               _buildRescueTeamList(),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => ShakeLocationPage(),
-              //       ),
-              //     );
-              //   },
-              //   child: const Text('Join Rescue Team'),
-              // ),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => ShakeLocationPage(),
+                  //   ),
+                  // );
+                },
+                child: const Text('Join Rescue Team'),
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -55,12 +55,12 @@ class _OngoingScreenState extends State<OngoingScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LocationTrackingScreen(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => LocationTrackingScreen(),
+                  //   ),
+                  // );
                 },
                 child: const Text('track Map'),
               ),
@@ -247,14 +247,14 @@ class _OngoingScreenState extends State<OngoingScreen> {
 
   void _codeConfirm(String enteredCode, BuildContext context, int index) {
     if (enteredCode == '1234') {
-      // Navigate to VolunteerList page
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoConferencePage(
-              conferenceID: 1234.toString() + index.toString()),
-        ),
-      );
+      // // Navigate to VolunteerList page
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => VideoConferencePage(
+      //         conferenceID: 1234.toString() + index.toString()),
+      //   ),
+      // );
     } else {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
