@@ -247,14 +247,14 @@ class _OngoingScreenState extends State<OngoingScreen> {
 
   void _codeConfirm(String enteredCode, BuildContext context, int index) {
     if (enteredCode == '1234') {
-      // // Navigate to VolunteerList page
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => VideoConferencePage(
-      //         conferenceID: 1234.toString() + index.toString()),
-      //   ),
-      // );
+      // Navigate to VolunteerList page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoConferencePage(
+              conferenceID: 1234.toString() + index.toString()),
+        ),
+      );
     } else {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
