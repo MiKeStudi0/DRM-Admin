@@ -29,6 +29,8 @@ import 'package:drm_admin/theme/theme_controller.dart';
 import 'package:drm_admin/app/utils/color_converter.dart';
 import 'package:restart_app/restart_app.dart';
 
+import '../../../../disaster/screen/sos_screen/alert_shake.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -1273,6 +1275,18 @@ class _SettingsPageState extends State<SettingsPage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               VictimTrackingLivePage()));
+                                },
+                              ),
+                              SettingCard(
+                                elevation: 4,
+                                icon: const Icon(Icons.people),
+                                text: 'SOS',
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ShakeLocationPage()));
                                 },
                               ),
                               const Gap(10),
