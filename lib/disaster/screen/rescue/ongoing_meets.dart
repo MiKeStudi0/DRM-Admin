@@ -1,9 +1,11 @@
 import 'package:drm_admin/app/ui/settings/widgets/setting_card.dart';
 import 'package:drm_admin/disaster/screen/google_map/google_map.dart';
+import 'package:drm_admin/disaster/screen/google_map/victim_location.dart';
 import 'package:drm_admin/disaster/screen/rescue/vedioconf.dart';
 import 'package:drm_admin/disaster/screen/sos_screen/alert_shake.dart';
 import 'package:drm_admin/disaster/screen/static/static_awarness.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -51,13 +53,19 @@ class _OngoingScreenState extends State<OngoingScreen> {
                 endIndent: 10,
               ),
               _buildRescueTeamList(),
-              _buildSectionTitle('Helpline Numbers'),
-              Divider(
+                Divider(
                 color: Colors.grey[400],
                 thickness: 1,
                 endIndent: 10,
               ),
-              _buildHelplineNumbers(),
+                            _buildSectionTitle('Victim Location'),
+          const   SizedBox(
+                height: 15,
+             ),
+             _buildvitcim(),
+             const   SizedBox(
+                height: 15,
+             ),
               Divider(
                 color: Colors.grey[400],
                 thickness: 1,
@@ -108,27 +116,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Available Rescue Teams',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Divider(
-          color: Colors.grey[400],
-          thickness: 1,
-          endIndent: 30,
-        ),
-      ],
-    );
-  }
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -156,61 +143,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
-  Widget _buildHelplineNumbers() {
-    // Determine how many items to display
-    int displayCount = _isExpanded ? _helplineNumbers.length : 3;
-
-    return Column(
-      children: [
-        ..._helplineNumbers
-            .take(displayCount)
-            .map((entry) =>
-                _buildHelplineCard(entry['department']!, entry['number']!))
-            ,
-        const SizedBox(height: 8),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Text(
-            _isExpanded ? 'Show Less' : 'Show More',
-            style: const TextStyle(color: Colors.redAccent),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHelplineCard(String department, String number) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 5.0,
-      child: ListTile(
-        leading: const Icon(Icons.phone, color: Colors.redAccent),
-        title: Text(
-          department,
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        trailing: Text(
-          number,
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        onTap: () => _makePhoneCall(number),
-      ),
-    );
-  }
 
   Widget _buildStaticInformation() {
     return SettingCard(
@@ -220,6 +152,21 @@ class _OngoingScreenState extends State<OngoingScreen> {
       onPressed: () {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const StaticdataScreen()));
+      },
+    );
+
+  }
+    Widget _buildVictim() {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LineAwesomeIcons.book_dead_solid),
+      text: 'Awareness',
+      onPressed: () {
+         Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VictimLocation(),
+         ));
       },
     );
   }
@@ -251,6 +198,60 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
+  
+  Widget _buildvitcim() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VictimLocation(),
+            ));
+
+      },
+      child: Card(
+        elevation: 5.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Victim",
+          style: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 4),
+        Row(
+          children: [
+            Icon(Icons.location_on, color: Colors.grey),
+            SizedBox(width: 4),
+            Text("kozhikode",
+                style: TextStyle(fontSize: 14.0, color: Colors.white)),
+            SizedBox(width: 8),
+            
+          ],
+        ),
+      ],
+    ),
+               Icon(Icons.arrow_forward_ios, color: Colors.redAccent),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
   Widget _buildTeamInfo(String teamName, String location, String area) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,17 +280,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
         ),
       ],
     );
-  }
-
-  Future<void> _makePhoneCall(String number) async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: number);
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not launch dialer')),
-      );
-    }
   }
 
   Future<void> _showCodeInputDialog(BuildContext context, int index) async {

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:drm_admin/disaster/screen/rescue/const.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -15,12 +17,15 @@ class VictimLocation extends StatefulWidget {
 
 class _VictimLocationState extends State<VictimLocation> {
   final Completer<GoogleMapController> _controller = Completer();
-  final Set<Marker> _markers = {};
+    final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
   final TextEditingController _searchController = TextEditingController();
-  final LatLng _searchedLocation = const LatLng(0, 0);
   List<dynamic> _suggestions = [];
   int _markerCount = 0;
   String _victimCountLabel = "Total Victims";
+  LatLng? _currentLocation;
+  late GoogleMapController _mapController;
+
 
   // Your Google Maps API key here (replace with actual key)
   static const String apiKey = 'AIzaSyBJMhMpJEZEN2fubae-mdIZ-vCEXOAkHMk';
@@ -29,40 +34,175 @@ class _VictimLocationState extends State<VictimLocation> {
   void initState() {
     super.initState();
     _fetchLocationsFromFirebase();
+    _getCurrentLocation();
+
   }
 
-  void _fetchLocationsFromFirebase() async {
-    FirebaseFirestore.instance
-        .collection('Alert_locations')
-        .get()
-        .then((querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        var data = doc.data();
-        _markerCount += 1;
+  // Fetch user's current location
+  void _getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return;
+    }
 
-        LatLng position = LatLng(data['latitude'], data['longitude']);
-        _addMarker(position, doc.id);
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return;
       }
+    }
 
-      setState(() {
-        _victimCountLabel = "Total Victims";
-      });
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+      _addCurrentLocationMarker();
     });
   }
 
-  // Adds a marker to the map
-  void _addMarker(LatLng position, String markerId) {
+  // Add current location marker
+  void _addCurrentLocationMarker() {
+    if (_currentLocation != null) {
+      final Marker currentMarker = Marker(
+        markerId: const MarkerId('currentLocation'),
+        position: _currentLocation!,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: const InfoWindow(title: 'Your Location'),
+      );
+      setState(() {
+        _markers.add(currentMarker);
+      });
+    }
+  }
+  
+void _getDirectionsToVitcim(LatLng position) async {
+  print('Fetching directions to victim at $position');
+  
+  if (_currentLocation == null) return;
+  print('Fetching directions to victim at $_currentLocation');
+  
+  const apiKey = map; // Replace with your actual API key
+  print('${_currentLocation!.latitude},${_currentLocation!.longitude}');
+
+  final url = Uri.https(
+    'maps.googleapis.com',
+    '/maps/api/directions/json',
+    {
+      'origin': '${_currentLocation!.latitude},${_currentLocation!.longitude}',
+      'destination': '${position.latitude},${position.longitude}',
+      'key': apiKey,
+      'mode': 'driving',
+      'traffic_model': 'best_guess',
+      'departure_time': 'now',
+    },
+  );
+
+  final response = await http.get(url);
+  if (response.statusCode == 200) {
+    final decodedData = json.decode(response.body);
+    final routes = decodedData['routes'] as List;
+    if (routes.isNotEmpty) {
+      final points = routes[0]['overview_polyline']['points'];
+      List<LatLng> polylineCoordinates = _decodePolyline(points);
+      setState(() {
+        _polylines.clear();
+        _polylines.add(
+          Polyline(
+            polylineId: const PolylineId('Route_to_Victim'),
+            points: polylineCoordinates,
+            color: Colors.red,
+            width: 5,
+          ),
+        );
+      });
+      if (_mapController != null) {
+        _mapController.animateCamera(
+          CameraUpdate.newLatLng(position),
+        );
+      } else {
+        print("Map Controller is not initialized yet.");
+      }
+    } else {
+      print('No routes found to victim');
+    }
+  } else {
+    print("Failed to get directions: ${response.statusCode}");
+  }
+}
+
+
+  List<LatLng> _decodePolyline(String encoded) {
+    List<LatLng> points = [];
+    int index = 0, len = encoded.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lng += dlng;
+
+      points.add(LatLng(lat / 1E5, lng / 1E5));
+    }
+    return points;
+  }
+
+
+void _fetchLocationsFromFirebase() async {
+  FirebaseFirestore.instance
+      .collection('Alert_locations')
+      .get()
+      .then((querySnapshot) {
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data();
+      _markerCount += 1;
+
+      LatLng position = LatLng(data['latitude'], data['longitude']);
+      String userName = data['name']; // Assuming 'name' is the field in your collection
+      _addMarker(position, userName);
+    }
+
+    setState(() {
+      _victimCountLabel = "Total Victims";
+    });
+  });
+}
+
+
+  // Add a marker to the map
+  void _addMarker(LatLng position, String userName) {
     final Marker marker = Marker(
-      markerId: MarkerId(markerId),
+      markerId: MarkerId(userName),
       position: position,
-      infoWindow: InfoWindow(
-        title: 'Location: $markerId',
-      ),
+      icon: BitmapDescriptor.defaultMarker, // Default marker color
+      infoWindow: InfoWindow(title: userName),
+      onTap: () {
+        // _drawRoute(position);
+                      _getDirectionsToVitcim(position);
+
+      },
     );
     setState(() {
       _markers.add(marker);
     });
   }
+
 
   // Fetch location suggestions based on user input
   Future<void> _getSuggestions(String input) async {
