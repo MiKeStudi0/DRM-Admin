@@ -1,7 +1,6 @@
 import 'package:drm_admin/disaster/screen/login&signup/signup.dart';
 import 'package:gap/gap.dart';
 import 'package:drm_admin/app/data/db.dart';
-import 'package:drm_admin/app/ui/geolocation.dart';
 import 'package:drm_admin/app/ui/widgets/button.dart';
 import 'package:drm_admin/main.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ class _OnBordingState extends State<OnBording> {
     isar.writeTxnSync(() => isar.settings.putSync(settings));
     // Get.off(() => const SelectGeolocation(isStart: true),
     //     transition: Transition.downToUp);
-    Get.off(() => SignupPage(), transition: Transition.downToUp);
+    Get.off(() => const SignupPage(), transition: Transition.downToUp);
   }
 
   @override

@@ -7,15 +7,17 @@ import 'package:http/http.dart' as http;
 import 'dart:math';
 
 class VictimLocation extends StatefulWidget {
+  const VictimLocation({super.key});
+
   @override
   _VictimLocationState createState() => _VictimLocationState();
 }
 
 class _VictimLocationState extends State<VictimLocation> {
-  Completer<GoogleMapController> _controller = Completer();
-  Set<Marker> _markers = {};
-  TextEditingController _searchController = TextEditingController();
-  LatLng _searchedLocation = LatLng(0, 0);
+  final Completer<GoogleMapController> _controller = Completer();
+  final Set<Marker> _markers = {};
+  final TextEditingController _searchController = TextEditingController();
+  final LatLng _searchedLocation = const LatLng(0, 0);
   List<dynamic> _suggestions = [];
   int _markerCount = 0;
   String _victimCountLabel = "Total Victims";
@@ -34,13 +36,13 @@ class _VictimLocationState extends State<VictimLocation> {
         .collection('Alert_locations')
         .get()
         .then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        var data = doc.data() as Map<String, dynamic>;
+      for (var doc in querySnapshot.docs) {
+        var data = doc.data();
         _markerCount += 1;
 
         LatLng position = LatLng(data['latitude'], data['longitude']);
         _addMarker(position, doc.id);
-      });
+      }
 
       setState(() {
         _victimCountLabel = "Total Victims";
@@ -184,12 +186,12 @@ class _VictimLocationState extends State<VictimLocation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Victims Location'),
+        title: const Text('Victims Location'),
       ),
       body: Stack(
         children: [
           GoogleMap(
-            initialCameraPosition: CameraPosition(
+            initialCameraPosition: const CameraPosition(
               target: LatLng(11.258753, 75.780411), // Initial position
               zoom: 10.0, // Initial zoom level
             ),
@@ -210,7 +212,7 @@ class _VictimLocationState extends State<VictimLocation> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
@@ -223,7 +225,7 @@ class _VictimLocationState extends State<VictimLocation> {
                       Expanded(
                         child: TextField(
                           controller: _searchController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Search Location',
                             border: InputBorder.none,
                           ),
@@ -233,7 +235,7 @@ class _VictimLocationState extends State<VictimLocation> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                         onPressed: () {
                           _searchLocation(_searchController
                               .text); // Use searchLocation when button pressed
@@ -244,12 +246,12 @@ class _VictimLocationState extends State<VictimLocation> {
                 ),
                 if (_suggestions.isNotEmpty)
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    padding: EdgeInsets.all(5),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 5,
@@ -279,11 +281,11 @@ class _VictimLocationState extends State<VictimLocation> {
             bottom: 50,
             left: 15,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 5,
@@ -293,16 +295,16 @@ class _VictimLocationState extends State<VictimLocation> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.people, size: 24),
-                  SizedBox(width: 8),
+                  const Icon(Icons.people, size: 24),
+                  const SizedBox(width: 8),
                   Text(
-                    _victimCountLabel + ':',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    '$_victimCountLabel:',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     '$_markerCount',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

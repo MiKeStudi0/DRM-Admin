@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VolunteerList extends StatelessWidget {
-  VolunteerList({Key? key}) : super(key: key) {
+  VolunteerList({super.key}) {
     _stream = _reference.snapshots();
   }
 
@@ -82,7 +82,7 @@ class VolunteerList extends StatelessWidget {
 }
 
 class Volunteer extends StatelessWidget {
-  Volunteer(this.itemId, {Key? key}) : super(key: key) {
+  Volunteer(this.itemId, {super.key}) {
     _reference = FirebaseFirestore.instance.collection('volunteer').doc(itemId);
     _futureData = _reference.get();
   }
@@ -105,7 +105,7 @@ class Volunteer extends StatelessWidget {
             DocumentSnapshot documentSnapshot = snapshot.data;
             data = documentSnapshot.data() as Map;
 
-            return Container(
+            return SizedBox(
                 width: 250,
                 // padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 // margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),

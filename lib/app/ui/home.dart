@@ -14,7 +14,6 @@ import 'package:drm_admin/app/ui/places/view/place_list.dart';
 import 'package:drm_admin/app/ui/places/widgets/create_place.dart';
 import 'package:drm_admin/app/ui/geolocation.dart';
 import 'package:drm_admin/app/ui/main/view/main.dart';
-import 'package:drm_admin/app/ui/map/view/map.dart';
 import 'package:drm_admin/app/ui/settings/view/settings.dart';
 import 'package:drm_admin/app/utils/show_snack_bar.dart';
 import 'package:drm_admin/main.dart';
@@ -37,7 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     const MainPage(),
     const PlaceList(),
     if (!settings.hideMap) const NavMapScreen(),
-    OngoingScreen(),
+    const OngoingScreen(),
     const SettingsPage(),
   ];
 

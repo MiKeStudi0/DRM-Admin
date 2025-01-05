@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dio_cache_interceptor_file_store/dio_cache_interceptor_file_store.dart';
 import 'package:drm_admin/disaster/screen/bar%20charts/Charts.dart';
-import 'package:drm_admin/disaster/screen/bar%20charts/barchart.dart';
 import 'package:drm_admin/disaster/screen/bot/chatscreen.dart';
 import 'package:drm_admin/disaster/screen/google_map/usertrack.dart';
 import 'package:drm_admin/disaster/screen/google_map/victim_track.dart';
@@ -74,15 +73,15 @@ class _SettingsPageState extends State<SettingsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Chatscreen(),
+              builder: (context) => const Chatscreen(),
             ),
           );
         },
-        child: Icon(
+        backgroundColor: Colors.blueGrey,
+        child: const Icon(
           Icons.chat_bubble,
           color: Colors.white,
         ),
-        backgroundColor: Colors.blueGrey,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SingleChildScrollView(
@@ -1174,7 +1173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AlertInputPage(),
+                    builder: (context) => const AlertInputPage(),
                   ),
                 );
               },
@@ -1216,7 +1215,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                VolunteerReg()));
+                                                const VolunteerReg()));
                                   },
                                 ),
                                 SettingCard(
@@ -1279,7 +1278,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                UserTrackingDataPage()));
+                                                const UserTrackingDataPage()));
                                   },
                                 ),
                                 SettingCard(
@@ -1292,7 +1291,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                VictimTrackingLivePage()));
+                                                const VictimTrackingLivePage()));
                                   },
                                 ),
                                 SettingCard(
@@ -1304,7 +1303,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ShakeLocationPage()));
+                                                const ShakeLocationPage()));
                                   },
                                 ),
                                 const Gap(10),
@@ -1323,7 +1322,7 @@ class _SettingsPageState extends State<SettingsPage> {
               text: 'version'.tr,
               onPressed: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Charts()));
+                    context, MaterialPageRoute(builder: (context) => const Charts()));
               },
               info: true,
               infoWidget: _TextInfo(
@@ -1336,7 +1335,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 // Navigate back to the Signup page after logging out
-                Get.off(() => SignupPage(), transition: Transition.rightToLeft);
+                Get.off(() => const SignupPage(), transition: Transition.rightToLeft);
               },
             ),
             Padding(

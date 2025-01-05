@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class VolunteerReg extends StatefulWidget {
-  const VolunteerReg({Key? key}) : super(key: key);
+  const VolunteerReg({super.key});
 
   @override
   State<VolunteerReg> createState() => _VolunteerRegState();

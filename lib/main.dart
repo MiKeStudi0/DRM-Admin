@@ -89,7 +89,7 @@ void callbackDispatcher() {
 void main() async {
   final String timeZoneName;
   WidgetsFlutterBinding.ensureInitialized();
-  await await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Connectivity()

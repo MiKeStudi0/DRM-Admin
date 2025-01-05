@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AlertInputPage extends StatefulWidget {
+  const AlertInputPage({super.key});
+
   @override
   _AlertInputPageState createState() => _AlertInputPageState();
 }
@@ -12,7 +14,7 @@ class _AlertInputPageState extends State<AlertInputPage> {
   final TextEditingController _bodyController = TextEditingController();
 
   Future<void> sendNotification(String title, String body) async {
-    final url =
+    const url =
         'https://fcm.googleapis.com/v1/projects/disastermain-66982/messages:send';
     final headers = {
       'Content-Type': 'application/json',
@@ -44,7 +46,7 @@ class _AlertInputPageState extends State<AlertInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alert Page'),
+        title: const Text('Alert Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -52,27 +54,27 @@ class _AlertInputPageState extends State<AlertInputPage> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Notification Title',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _bodyController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Notification Body',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 final title = _titleController.text;
                 final body = _bodyController.text;
                 sendNotification(title, body);
               },
-              child: Text('Send Notification to All Users'),
+              child: const Text('Send Notification to All Users'),
             ),
           ],
         ),

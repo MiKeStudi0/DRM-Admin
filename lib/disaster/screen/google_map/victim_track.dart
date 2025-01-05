@@ -3,6 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class VictimTrackingLivePage extends StatefulWidget {
+  const VictimTrackingLivePage({super.key});
+
   @override
   _VictimTrackingLivePageState createState() => _VictimTrackingLivePageState();
 }
@@ -71,11 +73,11 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("No Data"),
-          content: Text("No tracking data is available."),
+          title: const Text("No Data"),
+          content: const Text("No tracking data is available."),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -92,11 +94,11 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
-          content: Text("An error occurred while fetching tracking data."),
+          title: const Text("Error"),
+          content: const Text("An error occurred while fetching tracking data."),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -113,11 +115,11 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Data Found"),
+          title: const Text("Data Found"),
           content: Text("$userCount user(s) are being tracked."),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -131,9 +133,9 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Live User Tracking")),
+      appBar: AppBar(title: const Text("Live User Tracking")),
       body: GoogleMap(
-        initialCameraPosition: CameraPosition(
+        initialCameraPosition: const CameraPosition(
           target: LatLng(11.2588, 75.7804), // Default position
           zoom: 13,
         ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class UserTrackingDataPage extends StatefulWidget {
+  const UserTrackingDataPage({super.key});
+
   @override
   _UserTrackingDataPageState createState() => _UserTrackingDataPageState();
 }
@@ -69,9 +71,9 @@ class _UserTrackingDataPageState extends State<UserTrackingDataPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("User Tracking Data")),
+      appBar: AppBar(title: const Text("User Tracking Data")),
       body: _trackedUsers.isEmpty
-          ? Center(
+          ? const Center(
               child: Text("No users are being tracked."),
             )
           : ListView.builder(
