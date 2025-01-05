@@ -1,4 +1,5 @@
 import 'package:drm_admin/disaster/screen/google_map/location_alert.dart';
+import 'package:drm_admin/disaster/screen/nav_map/nav_map_screen.dart';
 import 'package:drm_admin/disaster/screen/rescue/ongoing_meets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final List<Widget> pages = [
     const MainPage(),
     const PlaceList(),
-    if (!settings.hideMap) const MapPage(),
+    if (!settings.hideMap) const NavMapScreen(),
     OngoingScreen(),
     const SettingsPage(),
   ];
