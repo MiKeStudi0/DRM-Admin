@@ -1,5 +1,8 @@
 import 'package:drm_admin/app/ui/settings/widgets/setting_card.dart';
 import 'package:drm_admin/disaster/screen/google_map/google_map.dart';
+import 'package:drm_admin/disaster/screen/google_map/usertrack.dart';
+import 'package:drm_admin/disaster/screen/google_map/victim_track.dart';
+import 'package:drm_admin/disaster/screen/notification/fcm.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_list.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_reg.dart';
 import 'package:flutter/material.dart';
@@ -30,47 +33,34 @@ class _NavMapScreenState extends State<NavMapScreen> {
                 endIndent: 10,
               ),
               _buildRescueTeamList(),
+              _buildSectionTitle('Victim Live Track'),
               Divider(
                 color: Colors.grey[400],
                 thickness: 1,
                 endIndent: 10,
               ),
+              _buildLiveList(),
+              _buildLiveTrack(),
+              const SizedBox(height: 10),
+              _buildSectionTitle('Send Alert'),
+              Divider(
+                color: Colors.grey[400],
+                thickness: 1,
+                endIndent: 10,
+              ),
+              _buildAlertSend(),
               _buildSectionTitle('Volunteer Services'),
-              SettingCard(
-                elevation: 4,
-                icon: const Icon(LineAwesomeIcons.person_booth_solid),
-                text: 'Volunteer Registration',
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const VolunteerReg()));
-                },
+              Divider(
+                color: Colors.grey[400],
+                thickness: 1,
+                endIndent: 10,
               ),
-              SettingCard(
-                elevation: 4,
-                icon: const Icon(LineAwesomeIcons.people_carry_solid),
-                text: 'Volunteer List',
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => VolunteerList()));
-                },
-              ),
+              _buildVolunteerReg(),
+              _buildVolunteerList(),
             ],
           ),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Navigator.push(
-      //     //   context,
-      //     //   MaterialPageRoute(
-      //     //     builder: (context) => ShakeLocationPage(),
-      //     //   ),
-      //     // );
-      //   },
-      //   child: const Icon(Icons.crisis_alert_sharp),
-      //   backgroundColor: Colors.red,
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -87,22 +77,12 @@ class _NavMapScreenState extends State<NavMapScreen> {
 
   Widget _buildRescueTeamList() {
     return SizedBox(
-      height: 350,
+      height: 175,
       child: ListView(
         scrollDirection: Axis.vertical,
         children: [
           _buildRescueTeamCard('Safe Location', 'Kozhikode', 'Koyilandy'),
           _buildRescueTeamCard('Rescue Camp ', 'Kozhikode', 'Ulliyeri'),
-          const SizedBox(height: 10),
-          _buildSectionTitle('Emergency Services'),
-          Divider(
-            color: Colors.grey[400],
-            thickness: 1,
-            endIndent: 10,
-          ),
-          _buildPoliceStationCard(), // Add police station block
-          _buildHospitalCard(), // Add hospital block
-          //_fireforcecard(), // Add fire force block
         ],
       ),
     );
@@ -168,50 +148,74 @@ class _NavMapScreenState extends State<NavMapScreen> {
     );
   }
 
-  Widget _buildPoliceStationCard() {
+  Widget _buildLiveList() {
     return SettingCard(
       elevation: 4,
-      icon: const Icon(LineAwesomeIcons.call_missed_outgoing),
-      text: 'Police Station',
+      icon: const Icon(LineAwesomeIcons.list_ul_solid),
+      text: 'Victim Live List',
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const MapScreen(keyword: 'police'),
+            builder: (context) => const UserTrackingDataPage(),
           ),
         );
       },
     );
   }
 
-  Widget _buildHospitalCard() {
+  Widget _buildLiveTrack() {
     return SettingCard(
       elevation: 4,
-      icon: const Icon(LineAwesomeIcons.plus_square),
-      text: 'Hospital',
+      icon: const Icon(LineAwesomeIcons.map_marked_solid),
+      text: 'Victim Live Track',
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const MapScreen(keyword: 'hospital'),
+            builder: (context) => const VictimTrackingLivePage(),
           ),
         );
       },
     );
   }
 
-  Widget _fireforcecard() {
+  Widget _buildAlertSend() {
     return SettingCard(
       elevation: 4,
-      icon: const Icon(LineAwesomeIcons.fire_solid),
-      text: 'Fire Force',
+      icon: const Icon(LineAwesomeIcons.satellite_solid),
+      text: 'Send Alert To Users',
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const MapScreen(keyword: 'firestation'),
+            builder: (context) => AlertInputPage(),
           ),
         );
+      },
+    );
+  }
+
+  Widget _buildVolunteerReg() {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LineAwesomeIcons.person_booth_solid),
+      text: 'Volunteer Registration',
+      onPressed: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const VolunteerReg()));
+      },
+    );
+  }
+
+  Widget _buildVolunteerList() {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LineAwesomeIcons.people_carry_solid),
+      text: 'Volunteer List',
+      onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => VolunteerList()));
       },
     );
   }

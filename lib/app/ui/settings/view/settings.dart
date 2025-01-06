@@ -68,7 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -110,7 +110,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'appearance'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -160,7 +161,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.colorfilter),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.colorfilter),
                                   text: 'materialColor'.tr,
                                   switcher: true,
                                   value: settings.materialColor,
@@ -221,7 +223,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'functions'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -244,8 +247,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                             return AlertDialog.adaptive(
                                               title: Text(
                                                 'location'.tr,
-                                                style:
-                                                    context.textTheme.titleLarge,
+                                                style: context
+                                                    .textTheme.titleLarge,
                                               ),
                                               content: Text('no_location'.tr,
                                                   style: context
@@ -274,14 +277,15 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     style: context
                                                         .textTheme.titleMedium
                                                         ?.copyWith(
-                                                            color: Colors.green),
+                                                            color:
+                                                                Colors.green),
                                                   ),
                                                 ),
                                               ],
                                             );
                                           },
                                         );
-      
+
                                         return;
                                       }
                                       weatherController.getCurrentLocation();
@@ -353,7 +357,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     MyApp.updateAppState(context,
                                         newTimeRange: int.parse(newValue!));
                                     if (settings.notifications) {
-                                      flutterLocalNotificationsPlugin.cancelAll();
+                                      flutterLocalNotificationsPlugin
+                                          .cancelAll();
                                       weatherController.notification(
                                           weatherController.mainWeather);
                                     }
@@ -361,7 +366,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.timer_start),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.timer_start),
                                   text: 'timeStart'.tr,
                                   info: true,
                                   infoSettings: true,
@@ -421,7 +427,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.timer_pause),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.timer_pause),
                                   text: 'timeEnd'.tr,
                                   info: true,
                                   infoSettings: true,
@@ -444,8 +451,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     final TimeOfDay? timeEndPicker =
                                         await showTimePicker(
                                       context: context,
-                                      initialTime:
-                                          weatherController.timeConvert(timeEnd),
+                                      initialTime: weatherController
+                                          .timeConvert(timeEnd),
                                       builder: (context, child) {
                                         final Widget mediaQueryWrapper =
                                             MediaQuery(
@@ -512,14 +519,16 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'data'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.cloud_notif),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.cloud_notif),
                                   text: 'roundDegree'.tr,
                                   switcher: true,
                                   value: settings.roundDegree,
@@ -547,14 +556,16 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ],
                                   dropdownCange: (String? newValue) async {
                                     isar.writeTxnSync(() {
-                                      settings.degrees = newValue == 'celsius'.tr
-                                          ? 'celsius'
-                                          : 'fahrenheit';
+                                      settings.degrees =
+                                          newValue == 'celsius'.tr
+                                              ? 'celsius'
+                                              : 'fahrenheit';
                                       isar.settings.putSync(settings);
                                     });
                                     await weatherController.deleteAll(false);
                                     await weatherController.setLocation();
-                                    await weatherController.updateCacheCard(true);
+                                    await weatherController
+                                        .updateCacheCard(true);
                                     setState(() {});
                                   },
                                 ),
@@ -578,7 +589,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     });
                                     await weatherController.deleteAll(false);
                                     await weatherController.setLocation();
-                                    await weatherController.updateCacheCard(true);
+                                    await weatherController
+                                        .updateCacheCard(true);
                                     setState(() {});
                                   },
                                 ),
@@ -663,14 +675,16 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'widget'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.add_square),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.add_square),
                                   text: 'addWidget'.tr,
                                   onPressed: () {
                                     HomeWidget.requestPinWidget(
@@ -683,12 +697,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon:
-                                      const Icon(IconsaxPlusLinear.bucket_square),
+                                  icon: const Icon(
+                                      IconsaxPlusLinear.bucket_square),
                                   text: 'widgetBackground'.tr,
                                   info: true,
                                   infoWidget: CircleAvatar(
-                                    backgroundColor: context.theme.indicatorColor,
+                                    backgroundColor:
+                                        context.theme.indicatorColor,
                                     radius: 11,
                                     child: CircleAvatar(
                                       backgroundColor:
@@ -729,10 +744,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   data: context.theme.copyWith(
                                                     inputDecorationTheme:
                                                         InputDecorationTheme(
-                                                      border: OutlineInputBorder(
+                                                      border:
+                                                          OutlineInputBorder(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
+                                                            BorderRadius
+                                                                .circular(8),
                                                       ),
                                                     ),
                                                   ),
@@ -776,11 +792,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon: const Icon(IconsaxPlusLinear.text_block),
+                                  icon:
+                                      const Icon(IconsaxPlusLinear.text_block),
                                   text: 'widgetText'.tr,
                                   info: true,
                                   infoWidget: CircleAvatar(
-                                    backgroundColor: context.theme.indicatorColor,
+                                    backgroundColor:
+                                        context.theme.indicatorColor,
                                     radius: 11,
                                     child: CircleAvatar(
                                       backgroundColor: widgetTextColor.isEmpty
@@ -819,15 +837,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   data: context.theme.copyWith(
                                                     inputDecorationTheme:
                                                         InputDecorationTheme(
-                                                      border: OutlineInputBorder(
+                                                      border:
+                                                          OutlineInputBorder(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
+                                                            BorderRadius
+                                                                .circular(8),
                                                       ),
                                                     ),
                                                   ),
                                                   child: ColorPicker(
-                                                    color: widgetTextColor.isEmpty
+                                                    color: widgetTextColor
+                                                            .isEmpty
                                                         ? context
                                                             .theme.primaryColor
                                                         : HexColor.fromHex(
@@ -894,7 +914,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'map'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -920,8 +941,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SettingCard(
                                   elevation: 4,
-                                  icon:
-                                      const Icon(IconsaxPlusLinear.trash_square),
+                                  icon: const Icon(
+                                      IconsaxPlusLinear.trash_square),
                                   text: 'clearCacheStore'.tr,
                                   onPressed: () => showAdaptiveDialog(
                                     context: context,
@@ -999,7 +1020,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           return ListView(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 child: Text(
                                   'language'.tr,
                                   style: context.textTheme.titleLarge?.copyWith(
@@ -1066,7 +1088,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
                                     'support'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -1118,7 +1141,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       horizontal: 20, vertical: 15),
                                   child: Text(
                                     'groups'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -1127,15 +1151,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                   elevation: 4,
                                   icon: const Icon(LineAwesomeIcons.discord),
                                   text: 'Discord',
-                                  onPressed: () => weatherController.urlLauncher(
-                                      'https://discord.gg/JMMa9aHh8f'),
+                                  onPressed: () =>
+                                      weatherController.urlLauncher(
+                                          'https://discord.gg/JMMa9aHh8f'),
                                 ),
                                 SettingCard(
                                   elevation: 4,
                                   icon: const Icon(LineAwesomeIcons.telegram),
                                   text: 'Telegram',
-                                  onPressed: () => weatherController
-                                      .urlLauncher('https://t.me/darkmoonightX'),
+                                  onPressed: () =>
+                                      weatherController.urlLauncher(
+                                          'https://t.me/darkmoonightX'),
                                 ),
                                 const Gap(10),
                               ],
@@ -1151,32 +1177,24 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingCard(
               icon: const Icon(IconsaxPlusLinear.document),
               text: 'license'.tr,
-              // onPressed: () => Get.to(
-              //   () => LicensePage(
-              //     applicationIcon: Container(
-              //       width: 100,
-              //       height: 100,
-              //       margin: const EdgeInsets.symmetric(vertical: 5),
-              //       decoration: const BoxDecoration(
-              //         borderRadius: BorderRadius.all(Radius.circular(20)),
-              //         image: DecorationImage(
-              //           image: AssetImage('assets/icons/logoadmin.png'),
-              //         ),
-              //       ),
-              //     ),
-              //     applicationName: 'DRM-Admin',
-              //     applicationVersion: appVersion,
-              //   ),
-              //   transition: Transition.downToUp,
-              // ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AlertInputPage(),
+              onPressed: () => Get.to(
+                () => LicensePage(
+                  applicationIcon: Container(
+                    width: 100,
+                    height: 100,
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      image: DecorationImage(
+                        image: AssetImage('assets/icons/icon.jpg'),
+                      ),
+                    ),
                   ),
-                );
-              },
+                  applicationName: 'DRM-Admin',
+                  applicationVersion: appVersion,
+                ),
+                transition: Transition.downToUp,
+              ),
             ),
             SettingCard(
               icon: const Icon(IconsaxPlusLinear.archive_book),
@@ -1200,7 +1218,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       horizontal: 20, vertical: 15),
                                   child: Text(
                                     'Volunteer'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
                                       fontSize: 20,
                                     ),
                                   ),
@@ -1243,87 +1262,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             SettingCard(
-              icon: const Icon(IconsaxPlusLinear.archive_book),
-              text: 'Victim Tracking'.tr,
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).padding.bottom),
-                      child: StatefulBuilder(
-                        builder: (BuildContext context, setState) {
-                          return SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 15),
-                                  child: Text(
-                                    'Live Tracking'.tr,
-                                    style: context.textTheme.titleLarge?.copyWith(
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                                SettingCard(
-                                  elevation: 4,
-                                  icon: const Icon(Icons.people),
-                                  text: 'Victim List',
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const UserTrackingDataPage()));
-                                  },
-                                ),
-                                SettingCard(
-                                  elevation: 4,
-                                  icon: const Icon(
-                                      LineAwesomeIcons.people_carry_solid),
-                                  text: 'Live Locations',
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const VictimTrackingLivePage()));
-                                  },
-                                ),
-                                SettingCard(
-                                  elevation: 4,
-                                  icon: const Icon(Icons.people),
-                                  text: 'SOS',
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ShakeLocationPage()));
-                                  },
-                                ),
-                                const Gap(10),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-            SettingCard(
               icon: const Icon(IconsaxPlusLinear.hierarchy_square_2),
               text: 'version'.tr,
-              onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const Charts()));
-              },
               info: true,
               infoWidget: _TextInfo(
                 info: '$appVersion',
@@ -1335,7 +1275,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 // Navigate back to the Signup page after logging out
-                Get.off(() => const SignupPage(), transition: Transition.rightToLeft);
+                Get.off(() => const SignupPage(),
+                    transition: Transition.rightToLeft);
               },
             ),
             Padding(

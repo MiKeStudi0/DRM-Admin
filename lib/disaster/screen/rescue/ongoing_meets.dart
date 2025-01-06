@@ -1,4 +1,6 @@
 import 'package:drm_admin/app/ui/settings/widgets/setting_card.dart';
+import 'package:drm_admin/disaster/screen/bar%20charts/Charts.dart';
+import 'package:drm_admin/disaster/screen/bar%20charts/barchart.dart';
 import 'package:drm_admin/disaster/screen/google_map/google_map.dart';
 import 'package:drm_admin/disaster/screen/google_map/victim_location.dart';
 import 'package:drm_admin/disaster/screen/rescue/vedioconf.dart';
@@ -53,19 +55,19 @@ class _OngoingScreenState extends State<OngoingScreen> {
                 endIndent: 10,
               ),
               _buildRescueTeamList(),
-                Divider(
+              Divider(
                 color: Colors.grey[400],
                 thickness: 1,
                 endIndent: 10,
               ),
-                            _buildSectionTitle('Victim Location'),
-          const   SizedBox(
+              _buildSectionTitle('Victim Location'),
+              const SizedBox(
                 height: 15,
-             ),
-             _buildvitcim(),
-             const   SizedBox(
+              ),
+              _buildvitcim(),
+              const SizedBox(
                 height: 15,
-             ),
+              ),
               Divider(
                 color: Colors.grey[400],
                 thickness: 1,
@@ -73,6 +75,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
               ),
               _buildSectionTitle('Important Information'),
               _buildStaticInformation(),
+              _buildBarChart(),
               const SizedBox(height: 24),
               Center(
                 child: ElevatedButton.icon(
@@ -116,7 +119,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
-
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -143,7 +145,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
-
   Widget _buildStaticInformation() {
     return SettingCard(
       elevation: 4,
@@ -154,19 +155,31 @@ class _OngoingScreenState extends State<OngoingScreen> {
             MaterialPageRoute(builder: (context) => const StaticdataScreen()));
       },
     );
-
   }
-    Widget _buildVictim() {
+
+  Widget _buildBarChart() {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LineAwesomeIcons.bars_solid),
+      text: 'Resource Chart',
+      onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Charts()));
+      },
+    );
+  }
+
+  Widget _buildVictim() {
     return SettingCard(
       elevation: 4,
       icon: const Icon(LineAwesomeIcons.book_dead_solid),
       text: 'Awareness',
       onPressed: () {
-         Navigator.push(
+        Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const VictimLocation(),
-         ));
+            ));
       },
     );
   }
@@ -198,7 +211,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
     );
   }
 
-  
   Widget _buildvitcim() {
     return GestureDetector(
       onTap: () {
@@ -207,7 +219,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
             MaterialPageRoute(
               builder: (context) => const VictimLocation(),
             ));
-
       },
       child: Card(
         elevation: 5.0,
@@ -220,37 +231,36 @@ class _OngoingScreenState extends State<OngoingScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Victim",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(Icons.location_on, color: Colors.grey),
-            SizedBox(width: 4),
-            Text("kozhikode",
-                style: TextStyle(fontSize: 14.0, color: Colors.white)),
-            SizedBox(width: 8),
-            
-          ],
-        ),
-      ],
-    ),
-               Icon(Icons.arrow_forward_ios, color: Colors.redAccent),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Victim",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text("kozhikode",
+                          style:
+                              TextStyle(fontSize: 14.0, color: Colors.white)),
+                      SizedBox(width: 8),
+                    ],
+                  ),
+                ],
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.redAccent),
             ],
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildTeamInfo(String teamName, String location, String area) {
     return Column(
@@ -321,7 +331,8 @@ class _OngoingScreenState extends State<OngoingScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const VideoConferencePage(conferenceID: '12345'),
+          builder: (context) =>
+              const VideoConferencePage(conferenceID: '12345'),
         ),
       );
     } else {

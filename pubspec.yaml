@@ -100,6 +100,7 @@ dependencies:
   workmanager: ^0.5.2
   zego_uikit_prebuilt_video_conference: ^2.9.8
   sensors_plus: ^6.1.1
+  dart_jsonwebtoken: ^2.14.2
 
 # Uncomment this for publishing FLOSS variant
 # dependency_overrides:
