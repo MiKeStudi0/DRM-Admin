@@ -86,35 +86,173 @@ class _VictimLocationState extends State<VictimLocation> {
       );
     }
   }
+String _formatDateTime(DateTime dateTime) {
+  return "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
+}
 
-  void _fetchLocationsFromFirebase() async {
-    FirebaseFirestore.instance.collection('Alert_locations').get().then((querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        var data = doc.data();
-        LatLng position = LatLng(data['latitude'], data['longitude']);
-        String userName = data['name'];
-        _addMarker(position, userName);
-      }
-    });
-  }
+void _fetchLocationsFromFirebase() async {
+  FirebaseFirestore.instance.collection('Alert_locations').get().then((querySnapshot) {
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data();
+      LatLng position = LatLng(data['latitude'], data['longitude']);
+      String userName = data['name'];
+      String address = data['address'] ?? "No additional details"; // Example field
+      String profilePhotoUrl = data['profileImageUrl'] ?? ""; // Profile photo URL
+      String district = data['district'] ?? ""; // District
+      String email = data['email'] ?? ""; // Email
+      String phone = data['phone'] ?? ""; // Phone number
+      Timestamp time = data['timestamp'];         // Firestore Timestamp
+      _addMarker(position, userName, profilePhotoUrl, address, district, email, phone, time);
+    }
+  });
+}
 
-  void _addMarker(LatLng position, String userName) {
-    final Marker marker = Marker(
-      markerId: MarkerId(userName),
-      position: position,
-      icon: BitmapDescriptor.defaultMarker,
-      infoWindow: InfoWindow(title: userName),
+void _addMarker(LatLng position, String userName, String profilePhotoUrl, String address, String district , String email , String phone ,Timestamp  time) {
+  final Marker marker = Marker(
+    markerId: MarkerId(userName),
+    position: position,
+    icon: BitmapDescriptor.defaultMarker,
+    infoWindow: InfoWindow(
+      title: userName,
+      snippet: 'Tap for details',
       onTap: () {
-        if (_currentLocation != null) {
-          _drawRoute(_currentLocation!, position);
-        }
+        _showMarkerDetails(userName, profilePhotoUrl, address , district , email ,phone, time);
       },
-    );
-    setState(() {
-      _markers.add(marker);
-      _markerCount++;
-    });
-  }
+    ),
+    onTap: () {
+      if (_currentLocation != null) {
+        _drawRoute(_currentLocation!, position);
+      }
+    },
+  );
+  setState(() {
+    _markers.add(marker);
+    _markerCount++;
+  });
+}
+void _showMarkerDetails(
+    String userName,
+    String profilePhotoUrl,
+    String address,
+    String district,
+    String email,
+    String phone,
+    Timestamp timestamp) {
+  // Convert Timestamp to DateTime and format it
+  DateTime dateTime = timestamp.toDate();
+  String formattedDateTime = _formatDateTime(dateTime);
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true, // Allow the modal to expand fully
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 16.0,
+            left: 16.0,
+            right: 16.0,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0, // Adjust for keyboard
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Profile Picture
+              Center(
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: profilePhotoUrl.isNotEmpty
+                      ? NetworkImage(profilePhotoUrl)
+                      : null,
+                  child: profilePhotoUrl.isEmpty
+                      ? const Icon(Icons.person, size: 60, color: Colors.white)
+                      : null,
+                  backgroundColor: profilePhotoUrl.isNotEmpty
+                      ? Colors.transparent
+                      : Colors.grey.shade400,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // User Details Section
+              Text(
+                userName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Last Updated: $formattedDateTime",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const Divider(height: 30, thickness: 1),
+              // Address
+              _detailRow(Icons.location_on, "Address", address),
+              const SizedBox(height: 10),
+              // District
+              _detailRow(Icons.map, "District", district),
+              const SizedBox(height: 10),
+              // Email
+              _detailRow(Icons.email, "Email", email),
+              const SizedBox(height: 10),
+              // Phone
+              _detailRow(Icons.phone, "Phone", phone),
+              const SizedBox(height: 60),
+              // Close Button
+             
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Helper Widget for Detail Rows
+Widget _detailRow(IconData icon, String label, String value) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(icon, size: 24, color: Colors.blueAccent),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+
 
   Future<void> _drawRoute(LatLng start, LatLng destination) async {
     final String url =
