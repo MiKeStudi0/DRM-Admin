@@ -234,7 +234,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Victim",
+                    "SOS Victims",
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -246,7 +246,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
                     children: [
                       Icon(Icons.location_on, color: Colors.grey),
                       SizedBox(width: 4),
-                      Text("kozhikode",
+                      Text("India",
                           style:
                               TextStyle(fontSize: 14.0, color: Colors.white)),
                       SizedBox(width: 8),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -35,7 +36,6 @@ class _VictimLocationState extends State<VictimLocation> {
   }
 
   void _setMapStyle() {
-
     getJsonFile('assets/map_style.json').then((String value) {
       final mapStyle = value;
       _controller.future.then((controller) {
@@ -43,8 +43,6 @@ class _VictimLocationState extends State<VictimLocation> {
       });
     });
   }
-  
-   
 
   Future<String> getJsonFile(String path) async {
     return await rootBundle.loadString(path);
@@ -69,7 +67,8 @@ class _VictimLocationState extends State<VictimLocation> {
 
       if (_currentLocation != null) {
         final GoogleMapController controller = await _controller.future;
-        controller.animateCamera(CameraUpdate.newLatLngZoom(_currentLocation!, 14.0));
+        controller
+            .animateCamera(CameraUpdate.newLatLngZoom(_currentLocation!, 14.0));
       }
     }
   }
@@ -86,172 +85,220 @@ class _VictimLocationState extends State<VictimLocation> {
       );
     }
   }
-String _formatDateTime(DateTime dateTime) {
-  return "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
-}
 
-void _fetchLocationsFromFirebase() async {
-  FirebaseFirestore.instance.collection('Alert_locations').get().then((querySnapshot) {
-    for (var doc in querySnapshot.docs) {
-      var data = doc.data();
-      LatLng position = LatLng(data['latitude'], data['longitude']);
-      String userName = data['name'];
-      String address = data['address'] ?? "No additional details"; // Example field
-      String profilePhotoUrl = data['profileImageUrl'] ?? ""; // Profile photo URL
-      String district = data['district'] ?? ""; // District
-      String email = data['email'] ?? ""; // Email
-      String phone = data['phone'] ?? ""; // Phone number
-      Timestamp time = data['timestamp'];         // Firestore Timestamp
-      _addMarker(position, userName, profilePhotoUrl, address, district, email, phone, time);
-    }
-  });
-}
+  String _formatDateTime(DateTime dateTime) {
+    return "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
+  }
 
-void _addMarker(LatLng position, String userName, String profilePhotoUrl, String address, String district , String email , String phone ,Timestamp  time) {
-  final Marker marker = Marker(
-    markerId: MarkerId(userName),
-    position: position,
-    icon: BitmapDescriptor.defaultMarker,
-    infoWindow: InfoWindow(
-      title: userName,
-      snippet: 'Tap for details',
-      onTap: () {
-        _showMarkerDetails(userName, profilePhotoUrl, address , district , email ,phone, time);
-      },
-    ),
-    onTap: () {
-      if (_currentLocation != null) {
-        _drawRoute(_currentLocation!, position);
+  void _fetchLocationsFromFirebase() async {
+    FirebaseFirestore.instance
+        .collection('Alert_locations')
+        .get()
+        .then((querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        var data = doc.data();
+        LatLng position = LatLng(data['latitude'], data['longitude']);
+        String userName = data['name'];
+        String address =
+            data['address'] ?? "No additional details"; // Example field
+        String profilePhotoUrl =
+            data['profileImageUrl'] ?? ""; // Profile photo URL
+        String district = data['district'] ?? ""; // District
+        String email = data['email'] ?? ""; // Email
+        String phone = data['phone'] ?? ""; // Phone number
+        Timestamp time = data['timestamp']; // Firestore Timestamp
+        _addMarker(position, userName, profilePhotoUrl, address, district,
+            email, phone, time);
       }
-    },
-  );
-  setState(() {
-    _markers.add(marker);
-    _markerCount++;
-  });
-}
-void _showMarkerDetails(
-    String userName,
-    String profilePhotoUrl,
-    String address,
-    String district,
-    String email,
-    String phone,
-    Timestamp timestamp) {
-  // Convert Timestamp to DateTime and format it
-  DateTime dateTime = timestamp.toDate();
-  String formattedDateTime = _formatDateTime(dateTime);
+    });
+  }
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true, // Allow the modal to expand fully
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-    ),
-    builder: (BuildContext context) {
-      return SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 16.0,
-            left: 16.0,
-            right: 16.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0, // Adjust for keyboard
+  void _addMarker(
+      LatLng position,
+      String userName,
+      String profilePhotoUrl,
+      String address,
+      String district,
+      String email,
+      String phone,
+      Timestamp time) {
+    final Marker marker = Marker(
+      markerId: MarkerId(userName),
+      position: position,
+      icon: BitmapDescriptor.defaultMarker,
+      infoWindow: InfoWindow(
+        title: userName,
+        snippet: 'Tap for details',
+        onTap: () {
+          _showMarkerDetails(
+              userName, profilePhotoUrl, address, district, email, phone, time);
+        },
+      ),
+      onTap: () {
+        if (_currentLocation != null) {
+          _drawRoute(_currentLocation!, position);
+        }
+      },
+    );
+    setState(() {
+      _markers.add(marker);
+      _markerCount++;
+    });
+  }
+
+  void _showMarkerDetails(
+      String userName,
+      String profilePhotoUrl,
+      String address,
+      String district,
+      String email,
+      String phone,
+      Timestamp timestamp) {
+    // Convert Timestamp to DateTime and format it
+    DateTime dateTime = timestamp.toDate();
+    String formattedDateTime = _formatDateTime(dateTime);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allow the modal to expand fully
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 16.0,
+              left: 16.0,
+              right: 16.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom +
+                  16.0, // Adjust for keyboard
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Profile Picture
+                Row(
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundImage: profilePhotoUrl.isNotEmpty
+                            ? NetworkImage(profilePhotoUrl)
+                            : null,
+                        child: profilePhotoUrl.isEmpty
+                            ? const Icon(Icons.person,
+                                size: 60, color: Colors.white)
+                            : null,
+                        backgroundColor: profilePhotoUrl.isNotEmpty
+                            ? Colors.transparent
+                            : Colors.grey.shade400,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userName,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(221, 255, 255, 255),
+                          ),
+                          
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Last Updated: $formattedDateTime",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: const Color.fromARGB(255, 85, 255, 93),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // User Details Section
+
+                const Divider(height: 30, thickness: 1),
+                // Address
+                _detailRow(Icons.location_on, "Address", address, context),
+                const SizedBox(height: 10),
+                // District
+                _detailRow(Icons.map, "District", district, context),
+                const SizedBox(height: 10),
+                // Email
+                _detailRow(Icons.email, "Email", email , context),
+                const SizedBox(height: 10),
+                // Phone
+                _detailRow(Icons.phone, "Phone", phone, context),
+                const SizedBox(height: 60),
+                // Close Button
+              ],
+            ),
           ),
+        );
+      },
+    );
+  }
+Widget _detailRow(IconData icon, String label, String value, BuildContext context) {
+  final colorScheme = Theme.of(context).colorScheme;
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            size: 24,
+            color: colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile Picture
-              Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: profilePhotoUrl.isNotEmpty
-                      ? NetworkImage(profilePhotoUrl)
-                      : null,
-                  child: profilePhotoUrl.isEmpty
-                      ? const Icon(Icons.person, size: 60, color: Colors.white)
-                      : null,
-                  backgroundColor: profilePhotoUrl.isNotEmpty
-                      ? Colors.transparent
-                      : Colors.grey.shade400,
-                ),
-              ),
-              const SizedBox(height: 20),
-              // User Details Section
               Text(
-                userName,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                label,
+                style: GoogleFonts.ubuntu(
+                  textStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onBackground.withOpacity(0.8),
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
-                "Last Updated: $formattedDateTime",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey.shade600,
+                value,
+                style: GoogleFonts.ubuntu(
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: colorScheme.onBackground.withOpacity(0.6),
+                  ),
                 ),
               ),
-              const Divider(height: 30, thickness: 1),
-              // Address
-              _detailRow(Icons.location_on, "Address", address),
-              const SizedBox(height: 10),
-              // District
-              _detailRow(Icons.map, "District", district),
-              const SizedBox(height: 10),
-              // Email
-              _detailRow(Icons.email, "Email", email),
-              const SizedBox(height: 10),
-              // Phone
-              _detailRow(Icons.phone, "Phone", phone),
-              const SizedBox(height: 60),
-              // Close Button
-             
             ],
           ),
         ),
-      );
-    },
+      ],
+    ),
   );
 }
-
-// Helper Widget for Detail Rows
-Widget _detailRow(IconData icon, String label, String value) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Icon(icon, size: 24, color: Colors.blueAccent),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
 
 
   Future<void> _drawRoute(LatLng start, LatLng destination) async {
@@ -261,7 +308,8 @@ Widget _detailRow(IconData icon, String label, String value) {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final points = _decodePolyline(data['routes'][0]['overview_polyline']['points']);
+      final points =
+          _decodePolyline(data['routes'][0]['overview_polyline']['points']);
       setState(() {
         _polylines.clear();
         _polylines.add(
@@ -376,35 +424,37 @@ Widget _detailRow(IconData icon, String label, String value) {
     double distance = _calculateDistance(center, point);
     return distance <= radius;
   }
-void _searchLocation(String query) async {
-  if (query.isEmpty) {
-    return;
-  }
 
-  final String url =
-      'https://maps.googleapis.com/maps/api/place/textsearch/json?query=$query&key=$apiKey';
-  final response = await http.get(Uri.parse(url));
+  void _searchLocation(String query) async {
+    if (query.isEmpty) {
+      return;
+    }
 
-  if (response.statusCode == 200) {
-    final jsonData = json.decode(response.body);
-    if (jsonData['results'].isNotEmpty) {
-      final location = jsonData['results'][0]['geometry']['location'];
-      LatLng position = LatLng(location['lat'], location['lng']);
+    final String url =
+        'https://maps.googleapis.com/maps/api/place/textsearch/json?query=$query&key=$apiKey';
+    final response = await http.get(Uri.parse(url));
 
-      _moveCamera(position);
-      _countMarkersInRadius(position, 2000);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      if (jsonData['results'].isNotEmpty) {
+        final location = jsonData['results'][0]['geometry']['location'];
+        LatLng position = LatLng(location['lat'], location['lng']);
+
+        _moveCamera(position);
+        _countMarkersInRadius(position, 2000);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('No results found for the search query.')),
+        );
+      }
     } else {
+      print("Failed to fetch location: ${response.statusCode}");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No results found for the search query.')),
+        const SnackBar(content: Text('Error fetching search results.')),
       );
     }
-  } else {
-    print("Failed to fetch location: ${response.statusCode}");
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Error fetching search results.')),
-    );
   }
-}
 
   double _calculateDistance(LatLng start, LatLng end) {
     const double earthRadius = 6371000; // in meters
@@ -422,7 +472,7 @@ void _searchLocation(String query) async {
   double _toRadians(double degrees) {
     return degrees * (pi / 180);
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -436,11 +486,10 @@ void _searchLocation(String query) async {
               target: LatLng(11.258753, 75.780411),
               zoom: 10.0,
             ),
-           onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
               _setMapStyle();
-},
-
+            },
             markers: _markers,
             polylines: _polylines,
           ),
@@ -469,7 +518,7 @@ void _searchLocation(String query) async {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 50, 50, 50),
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
@@ -485,6 +534,9 @@ void _searchLocation(String query) async {
             child: TextField(
               controller: _searchController,
               decoration: const InputDecoration(
+                focusColor: Colors.black,
+                hoverColor: Colors.black,
+                fillColor: Colors.black,
                 hintText: 'Search Location',
                 border: InputBorder.none,
               ),
@@ -509,7 +561,7 @@ void _searchLocation(String query) async {
       margin: const EdgeInsets.symmetric(horizontal: 15),
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 70, 70, 70),
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
@@ -539,7 +591,7 @@ void _searchLocation(String query) async {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 214, 20, 20),
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
