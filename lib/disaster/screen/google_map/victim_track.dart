@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'dart:async';
 
 class VictimTrackingLivePage extends StatefulWidget {
   const VictimTrackingLivePage({super.key});
@@ -10,19 +13,30 @@ class VictimTrackingLivePage extends StatefulWidget {
 }
 
 class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
-  GoogleMapController? _mapController;
+  final Completer<GoogleMapController> _controller = Completer();
   Map<String, LatLng> _trackedUsers = {};
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.ref().child('users_tracking');
+  String? _mapStyle;
 
   @override
   void initState() {
     super.initState();
+    _loadMapStyle();
     _listenToUserLocations();
   }
 
+  // Load the custom map style from assets
+  Future<void> _loadMapStyle() async {
+    try {
+      _mapStyle = await rootBundle.loadString('assets/map_style.json');
+    } catch (e) {
+      debugPrint("Error loading map style: $e");
+    }
+  }
+
   void _listenToUserLocations() {
-    _databaseReference.onValue.listen((event) {
+    _databaseReference.onValue.listen((event) async {
       try {
         final data = event.snapshot.value as Map?;
         if (data != null) {
@@ -48,8 +62,9 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
             _showDataFoundPopup(users.length);
           }
 
-          if (_mapController != null && users.isNotEmpty) {
-            _mapController!.animateCamera(
+          if (_controller.isCompleted && users.isNotEmpty) {
+            final GoogleMapController mapController = await _controller.future;
+            mapController.animateCamera(
               CameraUpdate.newLatLng(users.values.first),
             );
           }
@@ -66,6 +81,7 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
       }
     });
   }
+
 
   // Popup dialog for no data found
   void _showNoDataPopup() {
@@ -115,8 +131,8 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Data Found"),
-          content: Text("$userCount user(s) are being tracked."),
+          title: const Text("Tracking Victims"),
+          content: Text("$userCount users are being tracked."),
           actions: [
             TextButton(
               child: const Text("OK"),
@@ -139,7 +155,14 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
           target: LatLng(11.2588, 75.7804), // Default position
           zoom: 13,
         ),
-        onMapCreated: (controller) => _mapController = controller,
+        onMapCreated: (controller) async {
+          if (!_controller.isCompleted) {
+            _controller.complete(controller);
+          }
+          if (_mapStyle != null) {
+            controller.setMapStyle(_mapStyle);
+          }
+        },
         markers: _trackedUsers.entries.map((entry) {
           return Marker(
             markerId: MarkerId(entry.key),
