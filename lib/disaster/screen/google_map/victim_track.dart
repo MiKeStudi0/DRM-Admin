@@ -24,6 +24,7 @@ class _VictimTrackingLivePageState extends State<VictimTrackingLivePage> {
     super.initState();
     _loadMapStyle();
     _listenToUserLocations();
+    
   }
 
   // Load the custom map style from assets
