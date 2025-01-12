@@ -164,7 +164,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
       text: 'Resource Chart',
       onPressed: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Charts()));
+            context, MaterialPageRoute(builder: (context) =>  Charts()));
       },
     );
   }

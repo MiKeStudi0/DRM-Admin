@@ -2,6 +2,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// ignore: must_be_immutable
 class VolunteerList extends StatelessWidget {
   VolunteerList({super.key}) {
     _stream = _reference.snapshots();
