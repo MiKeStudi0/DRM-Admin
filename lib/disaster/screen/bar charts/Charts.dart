@@ -21,13 +21,12 @@ class _ChartsState extends State<Charts> {
         String name = _nameController.text.trim();
         int requiredQuantity = int.parse(_requiredQuantityController.text.trim());
         int availableQuantity = int.parse(_availableQuantityController.text.trim());
-        int totalQuantity = requiredQuantity + availableQuantity;
 
         await FirebaseFirestore.instance.collection('units').doc(name).set({
           'name': name,
-          'totalQuantity': totalQuantity,
           'requiredQuantity': requiredQuantity,
           'availableQuantity': availableQuantity,
+          'totalQuantity': requiredQuantity + availableQuantity,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +152,7 @@ class _ChartsState extends State<Charts> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>( 
                 stream: FirebaseFirestore.instance.collection('units').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -172,15 +171,10 @@ class _ChartsState extends State<Charts> {
                       final data = filteredData[index];
                       final required = data['requiredQuantity'] as int;
                       final available = data['availableQuantity'] as int;
-                      final total = required + available;
 
-                      final requiredPercentage =
-                          (required / total * 100).toStringAsFixed(1);
-                      final availablePercentage =
-                          (available / total * 100).toStringAsFixed(1);
-                      final remainingPercentage =
-                          ((total - required - available) / total * 100)
-                              .toStringAsFixed(1);
+                      final requiredPercentage = (required / (required + available) * 100).toStringAsFixed(1);
+                      final availablePercentage = (available / (required + available) * 100).toStringAsFixed(1);
+                      final remainingPercentage = (100 - double.parse(requiredPercentage) - double.parse(availablePercentage)).toStringAsFixed(1);
 
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 8),
@@ -211,8 +205,7 @@ class _ChartsState extends State<Charts> {
                                         title: 'Available\n$availablePercentage%',
                                       ),
                                       PieChartSectionData(
-                                        value: (total - required - available)
-                                            .toDouble(),
+                                        value: (100 - double.parse(requiredPercentage) - double.parse(availablePercentage)),
                                         color: Colors.blue,
                                         title: 'Remaining\n$remainingPercentage%',
                                       ),
