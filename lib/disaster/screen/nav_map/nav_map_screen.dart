@@ -2,10 +2,15 @@ import 'package:drm_admin/app/ui/settings/widgets/setting_card.dart';
 import 'package:drm_admin/disaster/screen/google_map/google_map.dart';
 import 'package:drm_admin/disaster/screen/google_map/usertrack.dart';
 import 'package:drm_admin/disaster/screen/google_map/victim_track.dart';
+import 'package:drm_admin/disaster/screen/nav_map/rescuemap.dart';
 import 'package:drm_admin/disaster/screen/notification/fcm.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_list.dart';
 import 'package:drm_admin/disaster/screen/volunteer/volunteer_reg.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class NavMapScreen extends StatefulWidget {
@@ -55,8 +60,71 @@ class _NavMapScreenState extends State<NavMapScreen> {
                 thickness: 1,
                 endIndent: 10,
               ),
-              _buildVolunteerReg(),
-              _buildVolunteerList(),
+            SettingCard(
+              icon: const Icon(IconsaxPlusLinear.archive_book),
+              text: 'Volunteer'.tr,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).padding.bottom),
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, setState) {
+                          return SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  child: Text(
+                                    'Volunteer'.tr,
+                                    style:
+                                        context.textTheme.titleLarge?.copyWith(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                                SettingCard(
+                                  elevation: 4,
+                                  icon: const Icon(
+                                      LineAwesomeIcons.person_booth_solid),
+                                  text: 'Volunteer Registration',
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const VolunteerReg()));
+                                  },
+                                ),
+                                SettingCard(
+                                  elevation: 4,
+                                  icon: const Icon(
+                                      LineAwesomeIcons.people_carry_solid),
+                                  text: 'Volunteer List',
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VolunteerList()));
+                                  },
+                                ),
+                                const Gap(10),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
             ],
           ),
         ),
@@ -81,9 +149,39 @@ class _NavMapScreenState extends State<NavMapScreen> {
       child: ListView(
         scrollDirection: Axis.vertical,
         children: [
-          _buildRescueTeamCard('Safe Location', 'Kozhikode', 'Koyilandy'),
+          _builSafeLocationCard('Safe Location', 'Kozhikode', 'Koyilandy'),
           _buildRescueTeamCard('Rescue Camp ', 'Kozhikode', 'Ulliyeri'),
         ],
+      ),
+    );
+  }
+
+  
+  Widget _builSafeLocationCard(String teamName, String location, String area) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RescueMap(),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 5.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildTeamInfo(teamName, location, area),
+              const Icon(Icons.arrow_forward_ios, color: Colors.redAccent),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -192,30 +290,6 @@ class _NavMapScreenState extends State<NavMapScreen> {
             builder: (context) => AlertInputPage(),
           ),
         );
-      },
-    );
-  }
-
-  Widget _buildVolunteerReg() {
-    return SettingCard(
-      elevation: 4,
-      icon: const Icon(LineAwesomeIcons.person_booth_solid),
-      text: 'Volunteer Registration',
-      onPressed: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const VolunteerReg()));
-      },
-    );
-  }
-
-  Widget _buildVolunteerList() {
-    return SettingCard(
-      elevation: 4,
-      icon: const Icon(LineAwesomeIcons.people_carry_solid),
-      text: 'Volunteer List',
-      onPressed: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => VolunteerList()));
       },
     );
   }
