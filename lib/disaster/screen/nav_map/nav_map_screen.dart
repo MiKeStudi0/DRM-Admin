@@ -60,71 +60,71 @@ class _NavMapScreenState extends State<NavMapScreen> {
                 thickness: 1,
                 endIndent: 10,
               ),
-            SettingCard(
-              icon: const Icon(IconsaxPlusLinear.archive_book),
-              text: 'Volunteer'.tr,
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).padding.bottom),
-                      child: StatefulBuilder(
-                        builder: (BuildContext context, setState) {
-                          return SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 15),
-                                  child: Text(
-                                    'Volunteer'.tr,
-                                    style:
-                                        context.textTheme.titleLarge?.copyWith(
-                                      fontSize: 20,
+              SettingCard(
+                icon: const Icon(IconsaxPlusLinear.archive_book),
+                text: 'Volunteer'.tr,
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).padding.bottom),
+                        child: StatefulBuilder(
+                          builder: (BuildContext context, setState) {
+                            return SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 15),
+                                    child: Text(
+                                      'Volunteer'.tr,
+                                      style: context.textTheme.titleLarge
+                                          ?.copyWith(
+                                        fontSize: 20,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SettingCard(
-                                  elevation: 4,
-                                  icon: const Icon(
-                                      LineAwesomeIcons.person_booth_solid),
-                                  text: 'Volunteer Registration',
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const VolunteerReg()));
-                                  },
-                                ),
-                                SettingCard(
-                                  elevation: 4,
-                                  icon: const Icon(
-                                      LineAwesomeIcons.people_carry_solid),
-                                  text: 'Volunteer List',
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                VolunteerList()));
-                                  },
-                                ),
-                                const Gap(10),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                                  SettingCard(
+                                    elevation: 4,
+                                    icon: const Icon(
+                                        LineAwesomeIcons.person_booth_solid),
+                                    text: 'Volunteer Registration',
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const VolunteerReg()));
+                                    },
+                                  ),
+                                  SettingCard(
+                                    elevation: 4,
+                                    icon: const Icon(
+                                        LineAwesomeIcons.people_carry_solid),
+                                    text: 'Volunteer List',
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  VolunteerList()));
+                                    },
+                                  ),
+                                  const Gap(10),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -156,7 +156,6 @@ class _NavMapScreenState extends State<NavMapScreen> {
     );
   }
 
-  
   Widget _builSafeLocationCard(String teamName, String location, String area) {
     return GestureDetector(
       onTap: () {
@@ -271,7 +270,7 @@ class _NavMapScreenState extends State<NavMapScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const VictimTrackingLivePage(),
+            builder: (context) => const victimLiveTrackPage(),
           ),
         );
       },
