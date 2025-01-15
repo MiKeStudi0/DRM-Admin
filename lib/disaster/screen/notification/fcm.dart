@@ -117,6 +117,13 @@ class _AlertInputPageState extends State<AlertInputPage> {
         await http.post(Uri.parse(url), headers: headers, body: bodyData);
     if (response.statusCode == 200) {
       print('Notification sent successfully');
+
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'title': title,
+        'body': body,
+        'imageUrl': imageUrl,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
     } else {
       print('Failed to send notification');
       print('Status Code: ${response.statusCode}');
