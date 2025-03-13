@@ -191,7 +191,7 @@ class _NavMapScreenState extends State<NavMapScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const MapScreen(),
+            builder: (context) => const MapScreen(keyword:"School"),
           ),
         );
       },
