@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'package:drm_admin/disaster/screen/rescue/const.dart';
 
 class VictimLocation extends StatefulWidget {
   const VictimLocation({super.key});
@@ -206,7 +207,6 @@ class _VictimLocationState extends State<VictimLocation> {
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(221, 255, 255, 255),
                           ),
-                          
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -232,7 +232,7 @@ class _VictimLocationState extends State<VictimLocation> {
                 _detailRow(Icons.map, "District", district, context),
                 const SizedBox(height: 10),
                 // Email
-                _detailRow(Icons.email, "Email", email , context),
+                _detailRow(Icons.email, "Email", email, context),
                 const SizedBox(height: 10),
                 // Phone
                 _detailRow(Icons.phone, "Phone", phone, context),
@@ -245,82 +245,114 @@ class _VictimLocationState extends State<VictimLocation> {
       },
     );
   }
-Widget _detailRow(IconData icon, String label, String value, BuildContext context) {
-  final colorScheme = Theme.of(context).colorScheme;
 
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: colorScheme.primary.withOpacity(0.1),
-            shape: BoxShape.circle,
+  Widget _detailRow(
+      IconData icon, String label, String value, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: colorScheme.primary,
+            ),
           ),
-          child: Icon(
-            icon,
-            size: 24,
-            color: colorScheme.primary,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.ubuntu(
-                  textStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onBackground.withOpacity(0.8),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.ubuntu(
+                    textStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onBackground.withOpacity(0.8),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: GoogleFonts.ubuntu(
-                  textStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: colorScheme.onBackground.withOpacity(0.6),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.ubuntu(
+                    textStyle: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: colorScheme.onBackground.withOpacity(0.6),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   Future<void> _drawRoute(LatLng start, LatLng destination) async {
-    final String url =
-        'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey';
-    final response = await http.get(Uri.parse(url));
+    const String apiKey = map; // Replace with your actual API key
+    final Uri url =
+        Uri.parse("https://routes.googleapis.com/directions/v2:computeRoutes");
+
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask":
+          "routes.polyline.encodedPolyline" // Fetch only required fields
+    };
+
+    final Map<String, dynamic> body = {
+      "origin": {
+        "location": {
+          "latLng": {"latitude": start.latitude, "longitude": start.longitude}
+        }
+      },
+      "destination": {
+        "location": {
+          "latLng": {
+            "latitude": destination.latitude,
+            "longitude": destination.longitude
+          }
+        }
+      },
+      "travelMode": "DRIVE",
+    };
+
+    final response =
+        await http.post(url, headers: headers, body: jsonEncode(body));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final points =
-          _decodePolyline(data['routes'][0]['overview_polyline']['points']);
-      setState(() {
-        _polylines.clear();
-        _polylines.add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: points,
-            color: Colors.blue,
-            width: 4,
-          ),
-        );
-      });
+      if (data['routes'].isNotEmpty) {
+        final points =
+            _decodePolyline(data['routes'][0]['polyline']['encodedPolyline']);
+        setState(() {
+          _polylines.clear();
+          _polylines.add(
+            Polyline(
+              polylineId: const PolylineId('route'),
+              points: points,
+              color: Colors.blue,
+              width: 4,
+            ),
+          );
+        });
+      } else {
+        print('No routes found');
+      }
     } else {
       print('Failed to fetch directions: ${response.statusCode}');
     }

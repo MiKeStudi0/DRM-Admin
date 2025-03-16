@@ -1,14 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:drm_admin/disaster/screen/rescue/const.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
   final String? keyword;
 
   const MapScreen({super.key, this.keyword});
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -16,6 +18,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _mapController;
   LatLng? _currentLocation;
+  double _heading = 0.0; // Store the compass heading
   final Set<Polyline> _polylines = {};
   final Set<Marker> _markers = {};
 
@@ -23,6 +26,21 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _determinePosition();
+    _initializeCompass();
+  }
+
+  void _setMapStyle() async {
+    String style = await DefaultAssetBundle.of(context)
+        .loadString('assets/map_style.json');
+    _mapController.setMapStyle(style);
+  }
+
+  void _initializeCompass() {
+    FlutterCompass.events!.listen((event) {
+      setState(() {
+        _heading = event.heading ?? 0.0;
+      });
+    });
   }
 
   Future<void> _determinePosition() async {
@@ -31,7 +49,6 @@ class _MapScreenState extends State<MapScreen> {
 
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      // Handle permission denial appropriately
       print('Location permissions are denied');
       return;
     }
@@ -58,12 +75,13 @@ class _MapScreenState extends State<MapScreen> {
     if (_currentLocation == null) return;
 
     print('Fetching ${widget.keyword} near $_currentLocation');
-    const apiKey = 'AIzaSyBJMhMpJEZEN2fubae-mdIZ-vCEXOAkHMk'; // Replace with your actual Google Places API key
+    const apiKey = map; // Replace with your actual Google Places API key
     final url = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/nearbysearch/json',
       {
-        'location': '${_currentLocation!.latitude},${_currentLocation!.longitude}',
+        'location':
+            '${_currentLocation!.latitude},${_currentLocation!.longitude}',
         'radius': '10000', // 10 km radius
         'type': widget.keyword,
         'key': apiKey,
@@ -76,7 +94,7 @@ class _MapScreenState extends State<MapScreen> {
       final places = decodedData['results'] as List;
       _addMarkers(places);
     } else {
-      print("Failed to fetch police stations: ${response.statusCode}");
+      print("Failed to fetch places: ${response.statusCode}");
     }
   }
 
@@ -94,9 +112,10 @@ class _MapScreenState extends State<MapScreen> {
             markerId: MarkerId(name),
             position: LatLng(lat, lng),
             infoWindow: InfoWindow(title: name),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), // Blue marker
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             onTap: () {
-              _getDirectionsToPoliceStation(LatLng(lat, lng));
+              _getDirectionsToPlace(LatLng(lat, lng));
             },
           ),
         );
@@ -104,35 +123,52 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _getDirectionsToPoliceStation(LatLng policeStation) async {
+  void _getDirectionsToPlace(LatLng destination) async {
     if (_currentLocation == null) return;
 
-    const apiKey = 'AIzaSyBJMhMpJEZEN2fubae-mdIZ-vCEXOAkHMk'; // Replace with your actual API key
-    final url = Uri.https(
-      'maps.googleapis.com',
-      '/maps/api/directions/json',
-      {
-        'origin': '${_currentLocation!.latitude},${_currentLocation!.longitude}',
-        'destination': '${policeStation.latitude},${policeStation.longitude}',
-        'key': apiKey,
-        'mode': 'driving',
-        'traffic_model': 'best_guess',
-        'departure_time': 'now',
-      },
-    );
+    const apiKey = map; // Replace with your actual API key
+    final url =
+        Uri.parse("https://routes.googleapis.com/directions/v2:computeRoutes");
 
-    final response = await http.get(url);
+    final headers = {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask":
+          "routes.polyline.encodedPolyline" // Fetch only required fields
+    };
+
+    final body = jsonEncode({
+      "origin": {
+        "location": {
+          "latLng": {
+            "latitude": _currentLocation!.latitude,
+            "longitude": _currentLocation!.longitude
+          }
+        }
+      },
+      "destination": {
+        "location": {
+          "latLng": {
+            "latitude": destination.latitude,
+            "longitude": destination.longitude
+          }
+        }
+      },
+      "travelMode": "DRIVE",
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
     if (response.statusCode == 200) {
       final decodedData = json.decode(response.body);
-      final routes = decodedData['routes'] as List;
-      if (routes.isNotEmpty) {
-        final points = routes[0]['overview_polyline']['points'];
+      if (decodedData['routes'].isNotEmpty) {
+        final points = decodedData['routes'][0]['polyline']['encodedPolyline'];
         List<LatLng> polylineCoordinates = _decodePolyline(points);
         setState(() {
           _polylines.clear();
           _polylines.add(
             Polyline(
-              polylineId: const PolylineId('route_to_station'),
+              polylineId: const PolylineId('route_to_place'),
               points: polylineCoordinates,
               color: Colors.red,
               width: 5,
@@ -140,13 +176,13 @@ class _MapScreenState extends State<MapScreen> {
           );
         });
         _mapController.animateCamera(
-          CameraUpdate.newLatLng(policeStation),
+          CameraUpdate.newLatLng(destination),
         );
       } else {
-        print('No routes found to police station');
+        print('No routes found');
       }
     } else {
-      print("Failed to get directions to police station: ${response.statusCode}");
+      print("Failed to get directions: ${response.statusCode}");
     }
   }
 
@@ -186,23 +222,58 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(title: Text('${widget.keyword} Directions')),
       body: _currentLocation == null
           ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentLocation!,
-                zoom: 10.0,
-              ),
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-                _moveCameraToCurrentLocation();
-              },
-              polylines: _polylines,
-              markers: _markers.union({
-                Marker(
-                  markerId: const MarkerId('current_location'),
-                  position: _currentLocation!,
-                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Blue marker for current location
+          : Stack(
+              children: [
+                GoogleMap(
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target: _currentLocation!,
+                    zoom: 10.0,
+                  ),
+                  onMapCreated: (GoogleMapController controller) {
+                    _mapController = controller;
+                    _moveCameraToCurrentLocation();
+                    _setMapStyle();
+                  },
+                  //compassEnabled: true,
+                  polylines: _polylines,
+                  markers: _markers.union({
+                    Marker(
+                      markerId: const MarkerId('current_location'),
+                      position: _currentLocation!,
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueBlue),
+                      rotation: _heading,
+                    ),
+                  }),
                 ),
-              }),
+                Positioned(
+                  top: 16.0,
+                  right: 16.0,
+                  child: GestureDetector(
+                    onTap: () {
+                      _mapController.animateCamera(
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target: _currentLocation!,
+                            zoom: 10.0,
+                            bearing:
+                                _heading, // Update bearing to face the user’s direction
+                          ),
+                        ),
+                      );
+                    },
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.navigation, // Compass-like icon
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }

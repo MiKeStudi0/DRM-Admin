@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:drm_admin/disaster/screen/rescue/const.dart';
 
 class victimLiveTrackPage extends StatefulWidget {
   const victimLiveTrackPage({super.key});
@@ -30,7 +31,7 @@ class _victimLiveTrackPageState extends State<victimLiveTrackPage> {
           'https://disastermain-66982-default-rtdb.asia-southeast1.firebasedatabase.app')
       .child('users_tracking');
 
-  String apiKey = 'AIzaSyBJMhMpJEZEN2fubae-mdIZ-vCEXOAkHMk';
+  String apiKey = map;
 
   @override
   void initState() {
@@ -306,25 +307,56 @@ class _victimLiveTrackPageState extends State<victimLiveTrackPage> {
   }
 
   Future<void> _drawRoute(LatLng start, LatLng destination) async {
-    final String url =
-        'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey';
-    final response = await http.get(Uri.parse(url));
+    const String apiKey = map; // Replace with your actual API key
+    final Uri url =
+        Uri.parse("https://routes.googleapis.com/directions/v2:computeRoutes");
+
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask":
+          "routes.polyline.encodedPolyline" // Fetch only required fields
+    };
+
+    final Map<String, dynamic> body = {
+      "origin": {
+        "location": {
+          "latLng": {"latitude": start.latitude, "longitude": start.longitude}
+        }
+      },
+      "destination": {
+        "location": {
+          "latLng": {
+            "latitude": destination.latitude,
+            "longitude": destination.longitude
+          }
+        }
+      },
+      "travelMode": "DRIVE",
+    };
+
+    final response =
+        await http.post(url, headers: headers, body: jsonEncode(body));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final points =
-          _decodePolyline(data['routes'][0]['overview_polyline']['points']);
-      setState(() {
-        _polylines.clear();
-        _polylines.add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: points,
-            color: Colors.blue,
-            width: 4,
-          ),
-        );
-      });
+      if (data['routes'].isNotEmpty) {
+        final points =
+            _decodePolyline(data['routes'][0]['polyline']['encodedPolyline']);
+        setState(() {
+          _polylines.clear();
+          _polylines.add(
+            Polyline(
+              polylineId: const PolylineId('route'),
+              points: points,
+              color: Colors.blue,
+              width: 4,
+            ),
+          );
+        });
+      } else {
+        print('No routes found');
+      }
     } else {
       print('Failed to fetch directions: ${response.statusCode}');
     }
